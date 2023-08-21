@@ -1,5 +1,5 @@
 from collections import defaultdict
-from flask import Flask, redirect, url_for, render_template, session, request, json
+from flask import Flask, redirect, url_for, render_template
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
@@ -61,10 +61,8 @@ def query_db():
     with app.app_context():
         first_result = db.session.query(Query).order_by(Query.id.desc()).first()
         data['database_address'] = first_result.database_address
-        conn = psycopg2.connect(database=first_result.database_name,
-                                user=first_result.user_name,
-                                host=first_result.database_address,
-                                password=first_result.password,
+        conn = psycopg2.connect(database=first_result.database_name, user=first_result.user_name,
+                                host=first_result.database_address, password=first_result.password,
                                 port=first_result.port)
         cur = conn.cursor()
         cur.execute(first_result.query)
@@ -85,17 +83,10 @@ def query_db():
 def home():
     form = CreateQueryForm()
     if form.validate_on_submit():
-        new_query = Query(
-            database_address=form.database_address.data,
-            port=form.port.data,
-            database_name=form.database_name.data,
-            user_name=form.user_name.data,
-            password=form.password.data,
-            query=form.query.data,
-            table_name=form.table_name.data,
-            repeat_period=form.repeat_period.data,
-            result='Undone'
-        )
+        new_query = Query(database_address=form.database_address.data, port=form.port.data,
+            database_name=form.database_name.data, user_name=form.user_name.data, password=form.password.data,
+            query=form.query.data, table_name=form.table_name.data, repeat_period=form.repeat_period.data,
+            result='Undone')
         db.session.add(new_query)
         db.session.commit()
         query_db()
